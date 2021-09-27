@@ -18,3 +18,5 @@ Docker Environment Variables:
 | nordPass | NordVPN password |
 | nasUser | The service username on NAS host |
 | nasPass | The service password on NAS host |
+| LAN | Whitelist your local area network so the apps connect via NordVPN can be accessed. Example: 192.168.1.0/24 |
+| smbSharePath | Network path to your SMB share |
