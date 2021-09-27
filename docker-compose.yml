@@ -18,7 +18,7 @@ services:
       - PASS=$nordPass
       - CONNECT=United_States
       - TECHNOLOGY=OpenVPN
-      - NETWORK=192.168.1.0/24
+      - NETWORK=$LAN
       - KILLSWITCH=Enable
       - DNS=1.1.1.1,1.1.0.0,8.8.8.8
     ports:
@@ -102,4 +102,4 @@ volumes:
     driver_opts:
       type: cifs
       o: username=$nasUser,password=$nasPass,file_mode=0777,dir_mode=0777,noperm
-      device: "//192.168.1.18/Media"
+      device: $smbSharePath
