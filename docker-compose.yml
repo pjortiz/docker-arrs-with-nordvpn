@@ -1,0 +1,105 @@
+version: "3.4"
+networks:
+  sith-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.30.172.0/24"
+    enable_ipv6: false
+services:
+  nordvpn:
+    image: ghcr.io/bubuntux/nordvpn
+    container_name: nordvpn
+    cap_add:
+      - NET_ADMIN               
+    environment:
+      - USER=$nordUser
+      - PASS=$nordPass
+      - CONNECT=United_States
+      - TECHNOLOGY=OpenVPN
+      - NETWORK=192.168.1.0/24
+      - KILLSWITCH=Enable
+      - DNS=1.1.1.1,1.1.0.0,8.8.8.8
+    ports:
+      - 9080:9080 #qbittorrent
+      - 9117:9117 #jackett
+    networks:
+      - sith-network
+    restart: unless-stopped
+  qbittorrent:
+    image: ghcr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    cap_add:
+      - NET_ADMIN
+    network_mode: service:nordvpn
+    depends_on:
+      - nordvpn
+    environment:
+      - PUID=1000
+      - PGID=997
+      - TZ=America/New_York
+      - WEBUI_PORT=9080
+    volumes:
+      - qbit_config:/config
+      - media:/media
+    restart: unless-stopped
+  jackett:
+    image: ghcr.io/linuxserver/jackett
+    container_name: jackett
+    cap_add:
+      - NET_ADMIN
+    network_mode: service:nordvpn
+    environment:
+      - PUID=1000
+      - PGID=997
+      - TZ=America/New_York
+      - AUTO_UPDATE=true
+    volumes:
+      - jackett_config:/config
+      - media:/media
+    restart: unless-stopped
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr
+    container_name: sonarr
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=997
+      - TZ=America/New_York
+    volumes:
+      - sonarr_config:/config
+      - media:/media 
+    ports:
+      - 8989:8989
+    networks:
+      - sith-network
+    restart: unless-stopped
+  radarr:
+    image: ghcr.io/linuxserver/radarr
+    container_name: radarr
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=997
+      - TZ=America/New_York
+    volumes:
+      - radarr_config:/config
+      - media:/media 
+    ports:
+      - 7878:7878
+    networks:
+      - sith-network
+    restart: unless-stopped
+volumes:
+  qbit_config:
+  jackett_config:
+  sonarr_config:
+  radarr_config:
+  media:
+    driver_opts:
+      type: cifs
+      o: username=$nasUser,password=$nasPass,file_mode=0777,dir_mode=0777,noperm
+      device: "//192.168.1.18/Media"
