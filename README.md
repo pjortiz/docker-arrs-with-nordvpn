@@ -17,7 +17,7 @@ All apps connect to a shared volume that connects to a NAS SMB share using CIFS.
 - Radarr: https://hub.docker.com/r/linuxserver/radarr
 - Servarr Wiki: https://wiki.servarr.com/
 
-Docker Environment Variables:
+##Docker Environment Variables:
 | Variable | Notes |
 | ----------- | ----------- |
 | nordlynx_pkey | Generated via NordVPN Container |
@@ -25,3 +25,7 @@ Docker Environment Variables:
 | nasPass | The service password on NAS host |
 | LAN | Whitelist your local area network so the apps connect via NordVPN can be accessed. Example: 192.168.1.0/24 |
 | smbSharePath | Network path to your SMB share Example: //192.168.1.18/Media |
+
+##Docker Compose File
+```yaml:docker-compose.yml
+```
