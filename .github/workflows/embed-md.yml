@@ -28,7 +28,7 @@ jobs:
 #         run: pytest test_src
 
       - name: embedding readme
-        uses: pjortiz/markdown-embed-code@vfork
+        uses: pjortiz/markdown-embed-code@fork
         with:
           markdown: "README.md"
           token: ${{ secrets.GITHUB_TOKEN }}
