@@ -6,7 +6,7 @@ on:
       - main
     paths-ignore:
       - README.md
-      - workflows/**
+      - .github/workflows/**
 
 jobs:
   embed-code:
