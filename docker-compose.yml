@@ -125,5 +125,3 @@ volumes:
       type: cifs
       o: username=$nasUser,password=$nasPass,file_mode=0777,dir_mode=0777,noperm
       device: $nasMediaPath
-      
-      
