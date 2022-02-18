@@ -1,7 +1,7 @@
 name: Embed code in README
 
 on:
-  commit_comment:
+  push:
     branches:
       - main
 
