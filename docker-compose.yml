@@ -8,22 +8,24 @@ networks:
         - subnet: "172.30.172.0/24"
     enable_ipv6: false
 services:
-  nordvpn:
-    image: ghcr.io/bubuntux/nordvpn
-    container_name: nordvpn
+  nordlynx:
+    image: ghcr.io/bubuntux/nordlynx
+    container_name: nordlynx
     cap_add:
-      - NET_ADMIN               
+      - NET_ADMIN
     environment:
-      - USER=$nordUser
-      - PASS=$nordPass
-      - CONNECT=United_States
-      - TECHNOLOGY=OpenVPN
-      - NETWORK=$LAN
-      - KILLSWITCH=Enable
-      - DNS=1.1.1.1,1.1.0.0,8.8.8.8
+      - PRIVATE_KEY=$nordlynx_pkey #required
+      - QUERY=filters\[country_id\]=228&filters\[servers_groups\]\[identifier\]=legacy_p2p #https://api.nordvpn.com/v1/servers/recommendations?filters\[country_id\]=228&filters\[servers_groups\]\[identifier\]=legacy_p2p
+      - NET_LOCAL=192.168.1.0/24
+      - DNS=1.1.1.1,1.0.0.1,8.8.8.8
+      - RECONNECT=14400
+      - TZ=$timezone
     ports:
       - 9080:9080 #qbittorrent
-      - 9117:9117 #jackett
+      # - 9117:9117 #jackett
+      - 9696:9696 #prowlarr
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
     networks:
       - sith-network
     restart: unless-stopped
@@ -32,32 +34,34 @@ services:
     container_name: qbittorrent
     cap_add:
       - NET_ADMIN
-    network_mode: service:nordvpn
+    network_mode: service:nordlynx
     depends_on:
-      - nordvpn
+      nordlynx:
+        condition: service_healthy
     environment:
       - PUID=1000
       - PGID=997
-      - TZ=America/New_York
+      - TZ=$timezone
       - WEBUI_PORT=9080
     volumes:
       - qbit_config:/config
       - media:/media
     restart: unless-stopped
-  jackett:
-    image: ghcr.io/linuxserver/jackett
-    container_name: jackett
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
     cap_add:
       - NET_ADMIN
-    network_mode: service:nordvpn
+    network_mode: service:nordlynx
+    depends_on:
+      nordlynx:
+        condition: service_healthy
     environment:
       - PUID=1000
-      - PGID=997
-      - TZ=America/New_York
-      - AUTO_UPDATE=true
+      - PGID=1000
+      - TZ=$timezone
     volumes:
-      - jackett_config:/config
-      - media:/media
+      - prowlarr_config:/config
     restart: unless-stopped
   sonarr:
     image: ghcr.io/linuxserver/sonarr
@@ -67,7 +71,7 @@ services:
     environment:
       - PUID=1000
       - PGID=997
-      - TZ=America/New_York
+      - TZ=$timezone
     volumes:
       - sonarr_config:/config
       - media:/media 
@@ -84,7 +88,7 @@ services:
     environment:
       - PUID=1000
       - PGID=997
-      - TZ=America/New_York
+      - TZ=$timezone
     volumes:
       - radarr_config:/config
       - media:/media 
@@ -93,13 +97,31 @@ services:
     networks:
       - sith-network
     restart: unless-stopped
+  readarr:
+    image: lscr.io/linuxserver/readarr:nightly
+    container_name: readarr
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=$timezone
+    volumes:
+      - readarr_config:/config
+      - media:/media
+    ports:
+      - 8787:8787
+    networks:
+      - sith-network
+    restart: unless-stopped
 volumes:
   qbit_config:
-  jackett_config:
+  prowlarr_config:
   sonarr_config:
   radarr_config:
+  readarr_config:
   media:
     driver_opts:
       type: cifs
       o: username=$nasUser,password=$nasPass,file_mode=0777,dir_mode=0777,noperm
-      device: $smbSharePath
+      device: $nasMediaPath
