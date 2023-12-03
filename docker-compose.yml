@@ -57,7 +57,7 @@ services:
       - autoheal=true    # Required for willfarrell/docker-autoheal
     healthcheck:    # Required for willfarrell/docker-autoheal
       test: curl --fail --ipv4 https://google.com || exit 1
-      interval: 30s
+      interval: 60s
       timeout: 5s
       retries: 3
   prowlarr:
@@ -80,7 +80,7 @@ services:
       - autoheal=true    # Required for willfarrell/docker-autoheal
     healthcheck:    # Required for willfarrell/docker-autoheal
       test: curl --fail --ipv4 https://google.com || exit 1
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 3
   sonarr:
