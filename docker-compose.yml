@@ -34,6 +34,10 @@ services:
     restart: always
     labels:
       - autoheal=true   # Required for willfarrell/docker-autoheal
+    healthcheck:    # override the default health check conditions
+      interval: 30s
+      timeout: 5s
+      retries: 3
   qbittorrent:
     image: ghcr.io/linuxserver/qbittorrent
     container_name: qbittorrent
