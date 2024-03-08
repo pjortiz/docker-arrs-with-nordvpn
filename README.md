@@ -1,5 +1,5 @@
 # docker-arrs-with-nordvpn
-This is a Docker Stack to deploy Sonarr, Radarr, Jackett, and qBittorrent. With Jacket and qBittorrent connecting to NordVPN.
+This is a Docker Stack to deploy Sonarr, Radarr, Prowlarr, and qBittorrent. With Jacket and qBittorrent connecting to NordVPN.
 
 All apps connect to a shared volume that connects to a NAS SMB share using CIFS.
 
