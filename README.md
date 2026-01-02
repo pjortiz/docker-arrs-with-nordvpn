@@ -1,3 +1,6 @@
+**Archived, see new version here:** [docker-compose-servarr-with-gluetun](https://github.com/pjortiz/docker-compose-servarr-with-gluetun)
+
+
 # docker-arrs-with-nordvpn
 This is a Docker Stack to deploy Sonarr, Radarr, Prowlarr, and qBittorrent. With Jacket and qBittorrent connecting to NordVPN.
 
